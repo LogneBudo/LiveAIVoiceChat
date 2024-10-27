@@ -1,0 +1,129 @@
+﻿@page "/chat"
+@inject OpenAIService OpenAIService
+@inject IJSRuntime JSRuntime
+
+<h3>Chat with OpenAI</h3>
+
+<button @onclick="StartVoiceInteraction" disabled="@isListening">🎤 Start Speaking</button>
+
+<p><strong>Recognized Speech:</strong> @question</p>
+<p><strong>AI Response:</strong> @response</p>
+
+
+<script>
+    let recognition;
+
+    window.startSpeechRecognition = function() {
+        return new Promise((resolve, reject) => {
+            if (!recognition) {
+                recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+                recognition.lang = 'en-US'; // Set language
+
+                recognition.onresult = function(event) {
+                    resolve(event.results[0][0].transcript); // Resolve with recognized text
+                };
+
+                recognition.onerror = function(event) {
+                    reject(event.error); // Reject with the error
+                };
+
+                recognition.onend = function() {
+                    console.log('Speech recognition ended');
+                };
+            }
+
+            recognition.start(); // Start speech recognition
+        });
+    };
+
+    window.stopSpeechRecognition = function() {
+        if (recognition) {
+            recognition.stop(); // Stop recognition manually
+        }
+    };
+
+    window.speakText = function(text) {
+        console.log("Speaking: ", text); // Check if this logs the correct text
+        var synth = window.speechSynthesis;
+        var utterance = new SpeechSynthesisUtterance(text);
+        utterance.onerror = function(event) {
+            console.error("Speech synthesis error: ", event.error);
+        };
+        synth.speak(utterance);
+    };
+</script>
+@code {
+    private string question = string.Empty;
+    private string response = string.Empty;
+    private bool isListening = false;
+
+    // Start voice interaction
+    private async Task StartVoiceInteraction()
+    {
+        if (isListening) return; // Avoid double triggering
+
+        question = string.Empty; // Clear previous question
+        response = string.Empty; // Clear previous response
+        isListening = true; // Indicate we are listening
+        StateHasChanged(); // Update the UI
+
+        try
+        {
+            // Start listening and get recognized speech
+            question = await StartListening();
+
+            // Once we have the recognized speech, start streaming to OpenAI
+            if (!string.IsNullOrEmpty(question))
+            {
+                await StreamResponseFromOpenAI(question);
+            }
+        }
+        catch (Exception ex)
+        {
+            response = $"Error: {ex.Message}";
+        }
+        finally
+        {
+            isListening = false; // Reset listening state
+            StateHasChanged(); // Update UI to re-enable mic button
+        }
+    }
+
+    // Stream response from OpenAI API using recognized speech
+    private async Task StreamResponseFromOpenAI(string prompt)
+    {
+        response = ""; // Clear previous response
+        await OpenAIService.GetStreamedResponseAsync(prompt, OnDataReceived);
+    }
+
+    // Callback method for processing streamed data
+    private void OnDataReceived(string data)
+    {
+        response += data; // Append the streamed content to response
+        Console.WriteLine($"Updated response: {response}"); // Debug log
+
+        InvokeAsync(() =>
+        {
+            StateHasChanged(); // Trigger UI update after receiving each chunk
+        });
+
+        Speak(response).ConfigureAwait(false); // Speak the complete response
+    }
+
+    public async Task Speak(string text)
+    {
+        await JSRuntime.InvokeVoidAsync("speakText", text);
+    }
+
+    public async Task<string> StartListening()
+    {
+        // Trigger JS function to start speech recognition
+        return await JSRuntime.InvokeAsync<string>("startSpeechRecognition");
+    }
+
+    public async Task StopListening()
+    {
+        // Trigger JS function to stop speech recognition manually
+        await JSRuntime.InvokeVoidAsync("stopSpeechRecognition");
+    }
+}
