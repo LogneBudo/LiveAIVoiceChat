@@ -35,7 +35,8 @@ This demo showcases the integration of speech recognition, OpenAI API interactio
 
 - [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0)
 - [Node.js](https://nodejs.org/) (for Blazor WebAssembly development)
-- An OpenAI API key
+- An OpenAI API key (You can create an account and get an API key [here](https://platform.openai.com/signup). You can run all of that for just a $10 minimal amount to open the account.)
+
 
 ### Installation
 
