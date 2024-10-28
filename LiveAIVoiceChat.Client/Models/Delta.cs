@@ -2,7 +2,7 @@
 {
     public class Delta
     {
-        public string Role { get; set; }  // Nullable property
-        public string Content { get; set; }  // Nullable property
+        public string? Role { get; set; }  // Nullable property
+        public string? Content { get; set; }  // Nullable property
     }
 }

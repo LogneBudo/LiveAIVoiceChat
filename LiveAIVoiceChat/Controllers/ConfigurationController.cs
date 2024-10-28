@@ -17,7 +17,12 @@ namespace LiveAIVoiceChat.Controllers
         [HttpGet]
         public IActionResult GetConfiguration()
         {
-            var apiKey = _configuration["OPENAI_API_KEY"];
+            string? apiKey = _configuration["OPENAI_API_KEY"];
+            if (string.IsNullOrEmpty(apiKey))
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "OpenAI API key is not set");
+            }
+
             var appSettings = new AppSettings
             {
                 OpenAI = new OpenAISettings

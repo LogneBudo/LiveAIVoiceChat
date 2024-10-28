@@ -22,7 +22,6 @@ namespace LiveAIVoiceChat.Client.Services
     public class OpenAIService
     {
         private readonly HttpClient _httpClient;
-        private string _apiKey;
         private StringBuilder _responseBuilder = new StringBuilder();
         private readonly ConfigurationService _configurationService;
         /// <summary>
@@ -44,7 +43,12 @@ namespace LiveAIVoiceChat.Client.Services
         public async Task GetStreamedResponseAsync(string prompt, Action<string> onDataReceived)
         {
             var apiKey = await _configurationService.GetConfigurationAsync();
-            _apiKey = apiKey.OpenAI.ApiKey;
+            if (apiKey?.OpenAI?.ApiKey == null)
+            {
+                onDataReceived("Error: API key is null");
+                return;
+            }
+            string _apiKey = apiKey.OpenAI.ApiKey;
             var request = new HttpRequestMessage(HttpMethod.Post, "https://api.openai.com/v1/chat/completions");
             request.Headers.Add("Authorization", $"Bearer {_apiKey}");
 

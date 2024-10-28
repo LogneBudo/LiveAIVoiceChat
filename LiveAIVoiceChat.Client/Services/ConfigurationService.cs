@@ -11,7 +11,7 @@ namespace LiveAIVoiceChat.Client.Services
             _httpClient = httpClient;
         }
 
-        public async Task<AppSettings> GetConfigurationAsync()
+        public async Task<AppSettings?> GetConfigurationAsync()
         {
             return await _httpClient.GetFromJsonAsync<AppSettings>("api/configuration");
         }
@@ -20,11 +20,11 @@ namespace LiveAIVoiceChat.Client.Services
 
     public class AppSettings
     {
-        public OpenAISettings OpenAI { get; set; }
+        public required OpenAISettings OpenAI { get; set; }
     }
 
     public class OpenAISettings
     {
-        public string ApiKey { get; set; }
+        public required string ApiKey { get; set; }
     }
 }

@@ -41,12 +41,12 @@ namespace LiveAIVoiceChat
             app.MapRazorComponents<App>()
                 .AddInteractiveWebAssemblyRenderMode()
                 .AddAdditionalAssemblies(typeof(Client._Imports).Assembly);
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapControllers();
-                // Other endpoint configurations
-            });
-            
+
+            // Map controllers directly instead of using UseEndpoints
+            app.MapControllers();
+
+            // Other endpoint configurations can be added here
+
             app.Run();
         }
     }
