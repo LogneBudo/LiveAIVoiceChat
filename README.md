@@ -8,6 +8,22 @@
 LiveAIVoiceChat is a demo application that allows users to interact with OpenAI's GPT-3.5-turbo model using voice commands. 
 The application captures speech input, sends it to the OpenAI API, and streams the response back to the user. 
 This demo showcases the integration of speech recognition, OpenAI API interaction, and speech synthesis in a Blazor WebAssembly application.
+No external libraries used no nuggets, no chicken nuggets, no nothing. Just pure .Net 8 and MudBlazor.
+HttpClient makes a call to the OpenAI API and the response is streamed back to the user.
+The voice recognition and synthesis are done using the browser's built-in APIs.
+The response is displayed in the browser and spoken aloud using the browser's text-to-speech capabilities.
+
+## Technologies
+
+- .NET 8
+- Blazor WebAssembly
+- MudBlazor
+- OpenAI API
+- Browser Speech Recognition API
+- Browser Speech Synthesis API
+- C#
+- REST API
+- Visual Studio 2022
 
 ## Table of Contents
 

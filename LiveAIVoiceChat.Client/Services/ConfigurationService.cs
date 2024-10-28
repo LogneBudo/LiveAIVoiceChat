@@ -1,4 +1,5 @@
 ﻿using System.Net.Http.Json;
+using LiveAIVoiceChat.Client.Models;
 
 namespace LiveAIVoiceChat.Client.Services
 {
@@ -16,15 +17,5 @@ namespace LiveAIVoiceChat.Client.Services
             return await _httpClient.GetFromJsonAsync<AppSettings>("api/configuration");
         }
 
-    }
-
-    public class AppSettings
-    {
-        public required OpenAISettings OpenAI { get; set; }
-    }
-
-    public class OpenAISettings
-    {
-        public required string ApiKey { get; set; }
     }
 }
